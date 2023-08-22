@@ -1,8 +1,8 @@
 variable "access_key" {
-    default = "AKIA6OGR3M5Q622MNCR7" 
+    default = "" 
 }
 variable "secret_key" {
-    default = "QKa2MJy/GK2nBSJYH+O1uCftTiSc6Nfig2wrKKjH"
+    default = ""
 }
 
 variable "networking" {
