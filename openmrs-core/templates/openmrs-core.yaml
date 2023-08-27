@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.openmrs.name }}-deploy #openmrs-deploment
+spec:
+  minReadySeconds: 30
+  replicas: 5
+  selector:
+    matchLabels:
+      app: openmrs-core
+      ver: 1.0.0
+  strategy:
+    rollingUpdate:
+      maxSurge: 40%
+      maxUnavailable: 20%
+  template:
+    metadata:
+      labels:
+        app: openmrs-core
+        ver: 1.0.0
+    spec:
+      containers:
+        - image: {{.Values.mysql.imagename}}:{{ default .Chart.AppVersion .Values.mysql.imagetag }} #balajikolle/openmrs-core:2.4.0
+          name: {{ .Values.openmrs.name }}
+          env: 
+            - name: OMRS_DB_HOSTNAME
+              value: {{ .Values.mysql.OMRS_DB_HOSTNAME }}
+            - name: OMRS_DB_NAME
+              value: {{ .Values.mysql.OMRS_DB_NAME }}
+            - name: OMRS_DB_USERNAME
+              value: {{ .Values.mysql.OMRS_DB_NAME }}
+            - name: OMRS_DB_PASSWORD
+              value: {{ .Values.mysql.OMRS_DB_NAME }}
+            - name: OMRS_ADMIN_USER_PASSWORD
+              value: {{ .Values.mysql.OMRS_DB_NAME }}
+            - name: OMRS_ADMIN_PASSWORD_LOCKED
+              value: true
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+--- 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.openmrs.name }}-svc
+spec:
+  selector:
+    app: openmrs-core
+    ver: 1.0.0
+  type: LoadBalancer
+  ports:
+    - port: 8080
