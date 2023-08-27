@@ -21,7 +21,7 @@ spec:
         ver: 1.0.0
     spec:
       containers:
-        - image: {{.Values.mysql.imagename}}:{{ default .Chart.AppVersion .Values.mysql.imagetag }} #balajikolle/openmrs-core:2.4.0
+        - image: {{.Values.openmrs.imagename}}:{{ default .Chart.AppVersion .Values.openmrs.imagetag }} #balajikolle/openmrs-core:2.4.0
           name: {{ .Values.openmrs.name }}
           env: 
             - name: OMRS_DB_HOSTNAME
