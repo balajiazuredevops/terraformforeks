@@ -165,10 +165,12 @@ variable "addons" {
     {
       name    = "coredns"
       version = "v1.9.3-eksbuild.5"
-    },
-    {
-      name    = "aws-ebs-csi-driver"
-      version = "v1.16.1-eksbuild.1"
     }
+    # ,
+    # {
+    #   name    = "aws-ebs-csi-driver"
+    #   version = "v1.16.1-eksbuild.1"
+    # }
   ]
 }
+
