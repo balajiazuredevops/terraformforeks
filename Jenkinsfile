@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE_NAME = "balajikolle/openmrs-core"
-        //DOCKER_REGISTRY_CREDENTIALS = credentials('dockercredentials')
+        // DOCKER_REGISTRY_CREDENTIALS = credentials('dockercredentials')
         DOCKER_HUB_USERNAME = "balajikolle"
         DOCKER_HUB_PASSWORD = credentials('docker-passwd')
         NEW_VERSION = "env.BUILD_NUMBER"
@@ -36,7 +36,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'master',
-                credentialsId: 'github',
+                credentialsId: 'git_credt',
                 url: 'https://github.com/balajiazuredevops/openmrs-core.git'
             }
         }
@@ -56,10 +56,10 @@ pipeline {
                     //def buildNumber = ${BUILD_NUMBER}
                     // def registryCredentials = ${DOCKER_REGISTRY_CREDENTIALS}
                     // def dockerRegistryUrl = env.DOCKER_REGISTRY_URL
-                    def dockerImageTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+                    //def dockerImageTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
 
-                    docker.withRegistry('', DOCKER_HUB_USERNAME, DOCKER_HUB_PASSWORD) {
-                        docker.image(dockerImageTag).push()
+                    docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
+                        sh "docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} "
                         
                     }
                 }
@@ -68,7 +68,7 @@ pipeline {
         stage('Checkout helm template') {
             steps {
                 git branch: 'main',
-                credentialsId: 'github',
+                credentialsId: 'git_credt',
                 url: 'https://github.com/balajiazuredevops/terraformforeks.git'
             }
         }
