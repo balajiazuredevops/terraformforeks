@@ -3,6 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE_NAME = "balajikolle/openmrs-core"
+        DOCKER_TAG = "1.0"
         // DOCKER_REGISTRY_CREDENTIALS = credentials('dockercredentials')
         DOCKER_HUB_USERNAME = "balajikolle"
         DOCKER_HUB_PASSWORD = credentials('docker-passwd')
@@ -33,38 +34,42 @@ pipeline {
     }
     
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'master',
-                credentialsId: 'git_credt',
-                url: 'https://github.com/balajiazuredevops/openmrs-core.git'
-            }
-        }
+        // stage('Checkout') {
+        //     steps {
+        //         git branch: 'master',
+        //         credentialsId: 'git_credt',
+        //         url: 'https://github.com/balajiazuredevops/openmrs-core.git'
+        //     }
+        // }
         
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    //def buildNumber = ${BUILD_NUMBER}
-                    // Build the Docker image
-                    sh "docker build -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} ."
-                }
-            }
-        }
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    //def buildNumber = ${BUILD_NUMBER}
-                    // def registryCredentials = ${DOCKER_REGISTRY_CREDENTIALS}
-                    // def dockerRegistryUrl = env.DOCKER_REGISTRY_URL
-                    //def dockerImageTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+        // stage('Build Docker Image') {
+        //     steps {
+        //         script {
+        //             //def buildNumber = ${BUILD_NUMBER}
+        //             // Build the Docker image
+        //             sh "docker build -t ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} ."
+        //         }
+        //     }
+        // }
+        // stage('Push to Docker Hub') {
+        //     steps {
+        //         sh "docker login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_PASSWORD}"
+        //         sh "docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
 
-                    docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
-                        sh "docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} "
+        //         // script {
+        //         //     //def buildNumber = ${BUILD_NUMBER}
+        //         //     // def registryCredentials = ${DOCKER_REGISTRY_CREDENTIALS}
+        //         //     // def dockerRegistryUrl = env.DOCKER_REGISTRY_URL
+        //         //     //def dockerImageTag = "${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}"
+        //         //     docker login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_PASSWORD} 
+        //         //     docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}
+        //         //     // docker.withRegistry('', DOCKER_REGISTRY_CREDENTIALS) {
+        //         //     //     sh "docker push ${DOCKER_IMAGE_NAME}:${BUILD_NUMBER} "
                         
-                    }
-                }
-            }   
-        }
+        //         //     // }
+        //         // }
+        //     }   
+        // }
         stage('Checkout helm template') {
             steps {
                 git branch: 'main',
@@ -112,10 +117,21 @@ pipeline {
                     
                     echo "Deploying ${helmChart} to ${targetNamespace}"
                     sh "cd ${WORKSPACE}/openmrs/OpenmrsCore"
-                    sh "helm upgrade --install ${helmChart} ${WORKSPACE}/openmrs/openmrs-core --set openmrs.imagename=${DOCKER_IMAGE_NAME}, openmrs.imagetag=${BUILD_NUMBER},mysql.MYSQL_PASSWORD=${MYSQL_PASSWORD},mysql.MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD},mysql.OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD} --namespace ${targetNamespace}"
+                    sh "helm upgrade --install ${helmChart} ${WORKSPACE}/openmrs/openmrs-core --set openmrs.imagename=${DOCKER_IMAGE_NAME}, openmrs.imagetag=${DOCKER_TAG},mysql.MYSQL_PASSWORD=${MYSQL_PASSWORD},mysql.MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD},mysql.OMRS_ADMIN_USER_PASSWORD=${OMRS_ADMIN_USER_PASSWORD} --namespace ${targetNamespace}"
                 }
             }
         }  
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+        }
     }
     
     // post {
