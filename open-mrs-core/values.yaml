@@ -17,8 +17,8 @@ fullnameOverride: ""
 
 openmrs:
   name: "openmrs-core"
-  imagename:
-  imagetag: 
+  imagename: ""
+  imagetag: ""
 
 
 mysql:

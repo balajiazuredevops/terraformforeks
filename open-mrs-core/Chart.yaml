@@ -1,5 +1,5 @@
 apiVersion: v2
-name: OpenmrsCore
+name: open-mrs-core
 description: A Helm chart for Kubernetes
 
 # A chart can be either an 'application' or a 'library' chart.
