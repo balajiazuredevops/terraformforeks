@@ -115,7 +115,7 @@ variable "node_groups" {
     {
       name           = "Dev-t3-micro"
       tags           = "Dev-t3-micro"
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.medium"]
       ami_type       = "AL2_x86_64"
       capacity_type  = "ON_DEMAND"
       disk_size      = 20
@@ -131,7 +131,7 @@ variable "node_groups" {
     {
       name           = "Dev-t3-micro-spot"
       tags           = "Dev-t3-micro-spot"
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.medium"]
       ami_type       = "AL2_x86_64"
       capacity_type  = "SPOT"
       disk_size      = 20
@@ -165,12 +165,11 @@ variable "addons" {
     {
       name    = "coredns"
       version = "v1.9.3-eksbuild.5"
+    },
+    {
+      name    = "aws-ebs-csi-driver"
+      version = "v1.16.1-eksbuild.1"
     }
-    # ,
-    # {
-    #   name    = "aws-ebs-csi-driver"
-    #   version = "v1.16.1-eksbuild.1"
-    # }
   ]
 }
 
