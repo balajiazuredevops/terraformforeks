@@ -7,7 +7,7 @@ module "aws_vpc" {
 # EKS Cluster
 resource "aws_eks_cluster" "eks-cluster" {
   name     = var.cluster_config.name
-  role_arn = aws_iam_role.EKSClusterRole.arn
+  role_arn = aws_iam_role.EKSClusterRole-new.arn
   version  = var.cluster_config.version
 
   vpc_config {
@@ -26,7 +26,7 @@ resource "aws_eks_node_group" "node-ec2" {
   for_each        = { for node_group in var.node_groups : node_group.name => node_group }
   cluster_name    = aws_eks_cluster.eks-cluster.name
   node_group_name = each.value.name
-  node_role_arn   = aws_iam_role.NodeGroupRole.arn
+  node_role_arn   = aws_iam_role.NodeGroupRole-new.arn
   subnet_ids      = flatten(module.aws_vpc.private_subnets_id)
   #tags = { Name   = "Node-${index(each.value.tags) + 1}" }
   remote_access {
