@@ -17,8 +17,7 @@ pipeline {
             steps {
 
                 sh '''#!/usr/bin/env bash
-                    cd ${WORKSPACE}/Terraform/
-                    mkdir outplans
+                    ##mkdir outplans
                     terraform init 
                     terraform validate
                     terraform plan  -out ${JOB_NAME}-${BUILD_NUMBER}
